@@ -1,36 +1,57 @@
 :root {
-  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --bg-main: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-card-subtle: #f1f5f9;
-  --bg-blue-light: #eff6ff;
-  --bg-blue-subtle: #dbeafe;
-  
-  --primary-blue: #2563eb;
-  --primary-blue-hover: #1d4ed8;
-  --primary-blue-active: #1e40af;
-  --primary-blue-light: #3b82f6;
-  --primary-blue-glow: rgba(37, 99, 235, 0.18);
-  
-  --text-dark: #0f172a;
-  --text-medium: #334155;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
-  --text-blue: #1d4ed8;
-  
-  --border-color: #e2e8f0;
-  --border-focus: #3b82f6;
-  --border-blue: #bfdbfe;
-  
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  --shadow-xl: 0 20px 25px -5px rgba(37, 99, 235, 0.12), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
-  
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Palet Dasar: Nuansa Pasar & Kertas Label Tradisional Modern */
+  --bg-page: #F8F5EE;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F2ECE0;
+  --bg-input: #FFFFFF;
+
+  --text-primary: #1C1917;
+  --text-secondary: #44403C;
+  --text-muted: #78716C;
+  --border-soft: #E5DFD3;
+  --border-strong: #D3CAB8;
+
+  /* Aksen Tiap Komoditas Pangan */
+  --color-ayam: #B45309;
+  --bg-ayam: #FEF3C7;
+  --border-ayam: #FCD34D;
+
+  --color-bawang-merah: #9D174D;
+  --bg-bawang-merah: #FCE7F3;
+  --border-bawang-merah: #FBCFE8;
+
+  --color-bawang-putih: #854D0E;
+  --bg-bawang-putih: #FEF9C3;
+  --border-bawang-putih: #FEF08A;
+
+  --color-cabai-merah: #DC2626;
+  --bg-cabai-merah: #FEE2E2;
+  --border-cabai-merah: #FECACA;
+
+  --color-cabai-rawit: #15803D;
+  --bg-cabai-rawit: #DCFCE7;
+  --border-cabai-rawit: #BBF7D0;
+
+  /* Peringatan & Info */
+  --amber-warning-bg: #FEF3C7;
+  --amber-warning-border: #F59E0B;
+  --amber-warning-text: #78350F;
+
+  --blue-info-bg: #EFF6FF;
+  --blue-info-border: #60A5FA;
+  --blue-info-text: #1E40AF;
+
+  /* Bayangan Fisik Kartu Pasar */
+  --shadow-card: 0 4px 6px -1px rgba(28, 25, 23, 0.05), 0 2px 4px -2px rgba(28, 25, 23, 0.05);
+  --shadow-hover: 0 10px 15px -3px rgba(28, 25, 23, 0.08), 0 4px 6px -4px rgba(28, 25, 23, 0.05);
+  --shadow-banner: 0 2px 4px rgba(120, 53, 15, 0.08);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 }
 
 * {
@@ -40,17 +61,23 @@
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--bg-main);
-  color: var(--text-dark);
+  font-family: var(--font-body);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-input, button, select, textarea {
-  font-family: inherit;
+/* Tipografi Angka Harga Menggunakan Display Font */
+h1, h2, h3, .price-display, .market-title, .placard-tag {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+input, button, select {
+  font-family: var(--font-body);
 }
 
 button {
@@ -59,8 +86,12 @@ button {
   background: none;
 }
 
-a {
-  color: var(--primary-blue);
-  text-decoration: none;
+/* Hormati prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
-
