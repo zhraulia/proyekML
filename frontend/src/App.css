@@ -22,6 +22,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  padding: 0 1rem;
 }
 
 @media (max-width: 640px) {
@@ -33,12 +34,14 @@
 
 .hero-bg-img {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center 35%;
   z-index: 1;
+  filter: blur(2.5px);
+  transform: scale(1.02);
 }
 
 /* Gradasi biru: atas sangat tipis (10-15%), makin pekat ke bawah menyatu mulus */
@@ -63,12 +66,12 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1.25rem 4.5rem;
+  padding: 2rem 0 4.5rem;
 }
 
 @media (min-width: 768px) {
   .hero-content {
-    padding: 3rem 2rem 5.5rem;
+    padding: 3rem 0 5.5rem;
   }
 }
 
@@ -655,6 +658,135 @@
   font-size: 1.1rem;
 }
 
+/* Komparasi Prediksi Model untuk tahun 2026 */
+.forecast-compare-slip {
+  background-color: var(--blue-tint);
+  border: 1.5px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  padding: 0.65rem 0.75rem;
+  margin-top: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fc-slip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.825rem;
+}
+
+.fc-slip-label {
+  color: var(--blue-deep);
+  font-weight: 700;
+}
+
+.fc-slip-val {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--blue-primary);
+}
+
+/* Rentang Model 80% & 50% di Slip Komparasi 2026 */
+.fc-slip-range-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 0.4rem 0.55rem;
+  border-radius: var(--radius-tag);
+  border: 1px solid var(--border-subtle);
+}
+
+.fc-range-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fc-range-label {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--blue-darkest);
+}
+
+.fc-range-status-badge {
+  font-size: 0.675rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-tag);
+}
+
+.fc-range-status-badge.status-in {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.fc-range-status-badge.status-out {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.fc-range-values {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.fc-slip-range-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  padding: 0 0.2rem;
+}
+
+.fc-range-sub-label {
+  font-weight: 600;
+}
+
+.fc-range-sub-val {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.fc-slip-eval {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.fc-eval-label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.fc-eval-badge {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-tag);
+}
+
+.fc-eval-badge.eval-plus {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.fc-eval-badge.eval-minus {
+  background: #E0E7FF;
+  color: #3730A3;
+}
+
 /* --------------------------------------------------------------------------
    BATANG VISUAL RENTANG PREDIKSI (CSS-BASED)
    -------------------------------------------------------------------------- */
@@ -675,9 +807,17 @@
 .range-visual-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   font-size: 0.75rem;
   font-weight: 600;
+  gap: 0.25rem;
+}
+
+.range-visual-header-labels {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
 }
 
 .range-visual-title {
@@ -689,6 +829,12 @@
   color: var(--text-dark);
   font-weight: 700;
   font-size: 0.85rem;
+}
+
+.range-visual-sub-50 {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .range-bar-track {

@@ -249,6 +249,18 @@ def load_and_validate_data(data_dir: Optional[str] = None) -> Dict[str, Any]:
     tgl_fc_min = all_fc_dates[0]
     tgl_fc_maks = all_fc_dates[-1]
 
+    # Muat pemetaan nilai forecast dan interval 2026 jika tersedia (untuk komparasi out-of-sample)
+    path_fc_2026 = os.path.join(data_dir, "forecast_2026_eval.json")
+    forecast_2026_by_date_komoditas: Dict[Tuple[str, str], Dict[str, Any]] = {}
+    if os.path.isfile(path_fc_2026):
+        try:
+            with open(path_fc_2026, mode="r", encoding="utf-8") as f:
+                rows_2026 = json.load(f)
+                for item in rows_2026:
+                    forecast_2026_by_date_komoditas[(item["tanggal"], item["komoditas"])] = item
+        except Exception:
+            pass
+
     return {
         "metadata": metadata,
         "komoditas": KOMODITAS_RESMI,
@@ -259,6 +271,7 @@ def load_and_validate_data(data_dir: Optional[str] = None) -> Dict[str, Any]:
         "tanggal_maks_forecast": tgl_fc_maks,
         "aktual_by_date_komoditas": aktual_by_date_komoditas,
         "forecast_by_date_komoditas": forecast_by_date_komoditas,
+        "forecast_2026_by_date_komoditas": forecast_2026_by_date_komoditas,
         "total_aktual_rows": len(rows_aktual),
         "total_forecast_rows": len(rows_fc),
     }

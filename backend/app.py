@@ -205,6 +205,7 @@ def create_app(data_dir=None):
         if tanggal_data <= data_terakhir:
             hasil_aktual = []
             any_ffill = False
+            fc_2026_map = data.get("forecast_2026_by_date_komoditas", {})
 
             for k in target_komoditas:
                 item = data["aktual_by_date_komoditas"].get((tanggal_data, k))
@@ -212,9 +213,48 @@ def create_app(data_dir=None):
                     is_ffill = bool(item.get("diisi_ffill", False))
                     if is_ffill:
                         any_ffill = True
+                    harga_akt = int(item["harga"])
+
+                    # Ambil angka prediksi dan rentang versi model jika tanggal berada di tahun 2026
+                    fc_2026_info = fc_2026_map.get((tanggal_data, k))
+                    if fc_2026_info is not None:
+                        pred_2026 = fc_2026_info.get("prediksi")
+                        selisih_rp = (harga_akt - pred_2026) if pred_2026 is not None else None
+                        selisih_pct = round(((harga_akt - pred_2026) / pred_2026) * 100, 1) if (pred_2026 is not None and pred_2026 != 0) else None
+                        
+                        bb80 = fc_2026_info.get("batas_bawah_80")
+                        ba80 = fc_2026_info.get("batas_atas_80")
+                        rentang_80_2026 = [bb80, ba80] if (bb80 is not None and ba80 is not None) else None
+                        
+                        bb50 = fc_2026_info.get("batas_bawah_50")
+                        ba50 = fc_2026_info.get("batas_atas_50")
+                        rentang_50_2026 = [bb50, ba50] if (bb50 is not None and ba50 is not None) else None
+                        
+                        # Cek apakah harga aktual berhasil masuk ke dalam rentang 80% model
+                        masuk_rentang_80 = bool(bb80 <= harga_akt <= ba80) if rentang_80_2026 else None
+                        horizon_hk_2026 = fc_2026_info.get("horizon_hk")
+                        tipe_rentang_2026 = fc_2026_info.get("tipe_rentang", "terkalibrasi_80")
+                    else:
+                        pred_2026 = None
+                        selisih_rp = None
+                        selisih_pct = None
+                        rentang_80_2026 = None
+                        rentang_50_2026 = None
+                        masuk_rentang_80 = None
+                        horizon_hk_2026 = None
+                        tipe_rentang_2026 = None
+
                     hasil_aktual.append({
                         "komoditas": k,
-                        "harga_aktual": int(item["harga"]),
+                        "harga_aktual": harga_akt,
+                        "prediksi_2026": pred_2026,
+                        "selisih_rp": selisih_rp,
+                        "selisih_pct": selisih_pct,
+                        "rentang_80_2026": rentang_80_2026,
+                        "rentang_50_2026": rentang_50_2026,
+                        "masuk_rentang_80": masuk_rentang_80,
+                        "horizon_hk_2026": horizon_hk_2026,
+                        "tipe_rentang_2026": tipe_rentang_2026,
                         "diisi_ffill": is_ffill,
                         # Aturan 3: Kunci rentang_hist selalu ada (null jika tidak relevan)
                         "rentang_hist": None
@@ -360,6 +400,83 @@ def create_app(data_dir=None):
             "data_terakhir": data["data_terakhir"],
             "aktual": seri_aktual,
             "prediksi": seri_fc
+        }), 200
+
+    # -------------------------------------------------------------------------
+    # Endpoint /api/validasi-2026
+    # Khusus analisis data 2026 sebelum periode prediksi murni
+    # -------------------------------------------------------------------------
+    @app.route("/api/validasi-2026", methods=["GET"])
+    def get_validasi_2026():
+        """
+        Mengembalikan ringkasan data aktual 2026 (1 Jan - 19 Nov 2026, 231 hari kerja)
+        beserta metrik kalibrasi interval 80% dari Sel 18.
+        """
+        data = app.config["APP_DATA"]
+        cakupan_map = {
+            "Daging Ayam": 71.9,
+            "Bawang Merah": 91.4,
+            "Bawang Putih": 72.3,
+            "Cabai Merah": 90.8,
+            "Cabai Rawit": 83.5,
+        }
+        catatan_map = {
+            "Daging Ayam": "Pergerakan harga relatif terjaga; sempat naik saat jelang hari besar lalu melandai kembali.",
+            "Bawang Merah": "Fluktuasi cukup lebar (Rp26.750 - Rp44.000). Rentang 80% model berhasil mencakup 91,4% data aktual.",
+            "Bawang Putih": "Sangat stabil sepanjang tahun (Rp28.500 - Rp40.500); model persistensi/naive sangat cocok.",
+            "Cabai Merah": "Kenaikan tajam di semester kedua hingga Rp87.500; 90,8% pergerakan masih dalam cakupan interval empiris.",
+            "Cabai Rawit": "Membuktikan kemampuan arah model: harga anjlok dari Rp80.000 ke Rp28.000 (tarikan ke rata-rata) sebelum naik kembali.",
+        }
+
+        # Kelompokkan data aktual 2026 per komoditas
+        ringkasan = []
+        for k in KOMODITAS_RESMI:
+            # Ambil semua data 2026 untuk komoditas k
+            rows = [
+                (t, item["harga"])
+                for (t, kom), item in data["aktual_by_date_komoditas"].items()
+                if kom == k and "2026-01-01" <= t <= data["data_terakhir"]
+            ]
+            rows.sort(key=lambda x: x[0])
+            if not rows:
+                continue
+
+            harga_awal = rows[0][1]
+            harga_akhir = rows[-1][1]
+            min_row = min(rows, key=lambda x: x[1])
+            max_row = max(rows, key=lambda x: x[1])
+            selisih_rp = harga_akhir - harga_awal
+            pct_chg = round((selisih_rp / harga_awal) * 100, 1)
+
+            ringkasan.append({
+                "komoditas": k,
+                "harga_awal": harga_awal,
+                "harga_akhir": harga_akhir,
+                "selisih_rp": selisih_rp,
+                "perubahan_pct": pct_chg,
+                "harga_min": min_row[1],
+                "tanggal_min": min_row[0],
+                "harga_maks": max_row[1],
+                "tanggal_maks": max_row[0],
+                "cakupan_80_pct": cakupan_map.get(k, 80.0),
+                "catatan": catatan_map.get(k, "")
+            })
+
+        milestones = [
+            {"tanggal": "2026-01-02", "label": "Awal Tahun 2026", "keterangan": "Patokan harga pembuka tahun"},
+            {"tanggal": "2026-02-19", "label": "1 Ramadan 1447 H", "keterangan": "Awal bulan puasa"},
+            {"tanggal": "2026-03-20", "label": "Jelang Idulfitri", "keterangan": "Puncak belanja Lebaran 2026"},
+            {"tanggal": "2026-04-02", "label": "Titik Balik Cabai", "keterangan": "Cabai Rawit turun ke level terendah"},
+            {"tanggal": "2026-05-26", "label": "Jelang Iduladha", "keterangan": "Kenaikan musiman Iduladha"},
+            {"tanggal": "2026-11-19", "label": "Batas Data Aktual", "keterangan": "Titik tolak sebelum prediksi murni"},
+        ]
+
+        return jsonify({
+            "periode": "1 Jan 2026 – 19 Nov 2026",
+            "jumlah_hari_kerja": 231,
+            "data_terakhir": data["data_terakhir"],
+            "ringkasan": ringkasan,
+            "milestones": milestones
         }), 200
 
     return app

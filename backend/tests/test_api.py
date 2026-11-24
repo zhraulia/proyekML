@@ -382,3 +382,18 @@ def test_api_seri_endpoint(client):
     assert len(data["aktual"]) == 120  # 120 hari aktual terakhir
     assert "prediksi" in data
     assert len(data["prediksi"]) == 261
+
+
+def test_api_validasi_2026_endpoint(client):
+    """
+    Pengujian endpoint khusus analisis data validasi 2026 sebelum prediksi murni.
+    """
+    res = client.get("/api/validasi-2026")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "periode" in data
+    assert data["jumlah_hari_kerja"] == 231
+    assert "ringkasan" in data
+    assert len(data["ringkasan"]) == 5
+    assert "milestones" in data
+    assert len(data["milestones"]) >= 5
