@@ -4,16 +4,20 @@ import {
   AlertTriangle,
   Info,
   Clock,
-  ArrowRight,
   RefreshCw,
-  TrendingDown,
-  CheckCircle2,
-  HelpCircle,
-  ShieldAlert
+  CheckCircle2
 } from 'lucide-react';
 import './App.css';
 
-// Helper: Format angka Rupiah standar id-ID
+// Helper: Format angka murni dengan pemisah ribuan titik
+export const formatRupiahNumber = (angka) => {
+  if (angka === null || angka === undefined || isNaN(angka)) return '-';
+  return new Intl.NumberFormat('id-ID', {
+    maximumFractionDigits: 0,
+  }).format(angka);
+};
+
+// Helper: Format Rupiah lengkap untuk teks naratif
 export const formatRupiah = (angka) => {
   if (angka === null || angka === undefined || isNaN(angka)) return '-';
   return new Intl.NumberFormat('id-ID', {
@@ -202,11 +206,9 @@ export default function App() {
         const data = await res.json();
         setMeta(data);
 
-        // Nilai tanggal default: tanggal awal prediksi atau data terakhir
         const defaultDate = data.tanggal_awal_prediksi || data.data_terakhir || '2026-11-20';
         setSelectedDate(defaultDate);
 
-        // Ambil hasil awal
         fetchPrediksi(defaultDate, 'semua');
       } catch (err) {
         setError(err.message || 'Gagal tersambung ke backend.');
@@ -222,7 +224,6 @@ export default function App() {
   const fetchPrediksi = async (tanggal, komoditas) => {
     if (!tanggal) return;
 
-    // Aturan 4: Selalu panggil setLoading(true) sebelum fetch
     setLoading(true);
     setError(null);
 
@@ -234,7 +235,6 @@ export default function App() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Ambil pesan error dari backend
         throw new Error(data.pesan || `Terjadi kesalahan (Kode ${res.status})`);
       }
 
@@ -252,263 +252,276 @@ export default function App() {
     fetchPrediksi(selectedDate, selectedKomoditas);
   };
 
+  // Filter catatan kontekstual dari array peringatan API:
+  // Hapus kalimat "Model tidak terbukti lebih akurat daripada harga terakhir",
+  // tetapi PERTAHANKAN catatan indikatif (h67+), penggeseran akhir pekan, dan isian hari libur
+  const catatanKontekstual = (predictionData?.peringatan || []).filter(
+    (p) => !p.toLowerCase().includes('tidak terbukti lebih akurat')
+  );
+
   return (
-    <div className="market-layout">
-      {/* HEADER PAPAN HARGA PASAR */}
-      <header className="market-header">
-        <div className="header-badge">
-          <span className="badge-bullet" />
-          PIHPS KOTA PADANG · HARGA PANGAN HARIAN
+    <div className="app-container">
+      {/* ====================================================================
+          HERO SECTION (55 - 65vh)
+          Gambar pasar terang dengan lapisan biru tipis di atas (10-15%),
+          makin ke bawah makin menyatu dengan latar biru.
+          ==================================================================== */}
+      <header className="hero-section">
+        <img
+          src="/img/pasar.jpg"
+          alt="Suasana Pasar Tradisional Kota Padang"
+          className="hero-bg-img"
+        />
+        <div className="hero-gradient-overlay" />
+        <div className="hero-content">
+          <div className="hero-text-block">
+            <h1 className="market-title">Papan Pantauan & Prediksi Harga Pangan</h1>
+            <p className="market-subtitle">
+              Harga pangan harian Kota Padang (PIHPS) dan perkiraan ke depan.
+            </p>
+            {meta?.data_terakhir && (
+              <p className="latest-data-text">
+                Data terakhir: {formatTanggalIndo(meta.data_terakhir)}
+              </p>
+            )}
+          </div>
         </div>
-        <h1 className="market-title">Papan Pantauan & Prediksi Harga Pangan</h1>
-        <p className="market-subtitle">
-          Sistem integrasi data pasar tradisional Kota Padang berbasis model SARIMAX.
-          {meta?.data_terakhir && (
-            <span className="latest-data-pill">
-              Data aktual terakhir: <strong>{formatTanggalIndo(meta.data_terakhir)}</strong>
-            </span>
-          )}
-        </p>
       </header>
 
-      {/* FORM PENCARIAN & KONTROL TANGGAL */}
-      <section className="control-placard">
-        <form onSubmit={handleSubmit} className="control-form">
-          <div className="form-group date-group">
-            <label htmlFor="input-date" className="control-label">
-              <Calendar size={16} /> Pilih Tanggal Pantauan
-            </label>
-            <input
-              id="input-date"
-              type="date"
-              className="market-input"
-              value={selectedDate}
-              min={meta?.tanggal_min || '2022-01-03'}
-              max={meta?.tanggal_maks || '2027-11-19'}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              required
-            />
-            <span className="field-hint">
-              Tersedia: 3 Jan 2022 s.d. 19 Nov 2027
-            </span>
-          </div>
+      {/* ====================================================================
+          KONTEN UTAMA DENGAN LATAR GRADASI BIRU MULUS
+          ==================================================================== */}
+      <main className="main-content">
+        <div className="content-inner">
+          {/* FORM PENCARIAN BERGAYA SLIP / STRIP NOTA RAPAT */}
+          <section className="nota-slip-control">
+            <form onSubmit={handleSubmit} className="nota-form">
+              <div className="form-group date-group">
+                <label htmlFor="input-date" className="control-label">
+                  <Calendar size={15} /> Tanggal Pantauan
+                </label>
+                <input
+                  id="input-date"
+                  type="date"
+                  className="nota-input"
+                  value={selectedDate}
+                  min={meta?.tanggal_min || '2022-01-03'}
+                  max={meta?.tanggal_maks || '2027-11-19'}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  required
+                />
+                <span className="field-hint">
+                  Rentang: 3 Jan 2022 – 19 Nov 2027
+                </span>
+              </div>
 
-          <div className="form-group commodity-group">
-            <label htmlFor="select-commodity" className="control-label">
-              Komoditas Pangan
-            </label>
-            <select
-              id="select-commodity"
-              className="market-select"
-              value={selectedKomoditas}
-              onChange={(e) => setSelectedKomoditas(e.target.value)}
-            >
-              <option value="semua">Semua Komoditas (5 Komoditas)</option>
-              {meta?.komoditas?.map((k) => (
-                <option key={k} value={k}>{k}</option>
-              ))}
-            </select>
-            <span className="field-hint">
-              Pilih satu komoditas atau tampilkan seluruhnya
-            </span>
-          </div>
+              <div className="form-group commodity-group">
+                <label htmlFor="select-commodity" className="control-label">
+                  Pilihan Komoditas
+                </label>
+                <select
+                  id="select-commodity"
+                  className="nota-select"
+                  value={selectedKomoditas}
+                  onChange={(e) => setSelectedKomoditas(e.target.value)}
+                >
+                  <option value="semua">Semua Komoditas (5 Komoditas)</option>
+                  {meta?.komoditas?.map((k) => (
+                    <option key={k} value={k}>{k}</option>
+                  ))}
+                </select>
+                <span className="field-hint">
+                  Pilih spesifik atau seluruhnya
+                </span>
+              </div>
 
-          <div className="form-group action-group">
-            <button
-              type="submit"
-              className="btn-fetch"
-              disabled={loading || metaLoading || !selectedDate}
-            >
-              {loading ? (
-                <>
-                  <RefreshCw size={18} className="spin-icon" /> Memuat Data...
-                </>
-              ) : (
-                <>
-                  <ArrowRight size={18} /> Tampilkan Harga
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </section>
-
-      {/* BANNER PERINGATAN RESMI DARI BACKEND */}
-      {predictionData?.peringatan && predictionData.peringatan.length > 0 && (
-        <section className="warning-banner" role="alert">
-          <div className="banner-icon-col">
-            <ShieldAlert size={24} className="banner-alert-icon" />
-          </div>
-          <div className="banner-content">
-            <div className="banner-title">Catatan & Peringatan Resmi Sistem:</div>
-            <ul className="banner-list">
-              {predictionData.peringatan.map((teks, idx) => (
-                <li key={idx}>{teks}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-
-      {/* STATUS BAR: TANGGAL DATA & HORIZON */}
-      {predictionData && predictionData.status !== 'di_luar_rentang' && (
-        <div className="status-meta-bar">
-          <div className="status-item">
-            <span className="status-label">Tanggal Ditampilkan:</span>
-            <span className="status-value">
-              {formatTanggalIndo(predictionData.tanggal_data)}
-            </span>
-            {predictionData.digeser_ke_jumat && (
-              <span className="shifted-tag">
-                <Clock size={12} /> Digeser ke Jumat
-              </span>
-            )}
-          </div>
-
-          <div className="status-item">
-            <span className="status-label">Kategori Status:</span>
-            {predictionData.status === 'aktual' ? (
-              <span className="badge-status badge-aktual">
-                <CheckCircle2 size={13} /> Data Aktual Historis
-              </span>
-            ) : (
-              <span className={`badge-status badge-prediksi ${predictionData.kategori_horizon === 'h67+' ? 'badge-indikatif' : ''}`}>
-                {predictionData.label_horizon}
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* AREA KEADAAN KHUSUS: ERROR, LOADING, DI LUAR RENTANG */}
-      {error && (
-        <div className="state-card error-card">
-          <AlertTriangle size={32} className="state-icon error-icon" />
-          <h3>Tidak Dapat Menampilkan Data</h3>
-          <p>{error}</p>
-        </div>
-      )}
-
-      {predictionData?.status === 'di_luar_rentang' && (
-        <div className="state-card out-of-range-card">
-          <Info size={32} className="state-icon info-icon" />
-          <h3>Tanggal di Luar Rentang Sistem</h3>
-          <p>{predictionData.pesan}</p>
-          <div className="range-limits">
-            <div className="limit-box">
-              <span className="limit-label">Data Riwayat Aktual:</span>
-              <span className="limit-val">
-                {formatTanggalIndo(predictionData.rentang_aktual[0])} s.d. {formatTanggalIndo(predictionData.rentang_aktual[1])}
-              </span>
-            </div>
-            <div className="limit-box">
-              <span className="limit-label">Periode Prediksi SARIMAX:</span>
-              <span className="limit-val">
-                {formatTanggalIndo(predictionData.rentang_prediksi[0])} s.d. {formatTanggalIndo(predictionData.rentang_prediksi[1])}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* GRID KARTU PAPAN HARGA KOMODITAS */}
-      {predictionData?.hasil && predictionData.hasil.length > 0 && (
-        <section className="price-grid">
-          {predictionData.hasil.map((item, idx) => {
-            const komoditasClass = KOMODITAS_CLASS[item.komoditas] || '';
-            const isAktual = predictionData.status === 'aktual';
-            const isH67 = predictionData.kategori_horizon === 'h67+';
-
-            return (
-              <article
-                key={item.komoditas}
-                className={`price-card ${komoditasClass}`}
-                style={{ animationDelay: `${idx * 60}ms` }}
-              >
-                {/* Header Kartu */}
-                <div className="card-top">
-                  <div>
-                    <span className="commodity-tag">Komoditas Pasar</span>
-                    <h2 className="commodity-name">{item.komoditas}</h2>
-                  </div>
-                  {isAktual ? (
-                    <span className="status-pill pill-aktual">
-                      {item.diisi_ffill ? 'Isian Hari Libur' : 'Data Aktual'}
-                    </span>
+              <div className="form-group action-group">
+                <button
+                  type="submit"
+                  className="btn-nota-solid"
+                  disabled={loading || metaLoading || !selectedDate}
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw size={16} className="spin-icon" /> Memuat...
+                    </>
                   ) : (
-                    <span className={`status-pill pill-forecast ${isH67 ? 'pill-indikatif' : ''}`}>
-                      {isH67 ? 'Indikatif' : 'Prediksi SARIMAX'}
-                    </span>
+                    'Lihat harga'
                   )}
-                </div>
+                </button>
+              </div>
+            </form>
+          </section>
 
-                {/* Angka Harga Utama (Bintang Visual) */}
-                <div className="price-body">
-                  <div className="price-label-small">
-                    {isAktual ? 'Harga Pasar Aktual' : 'Perkiraan Harga Model'}
-                  </div>
-                  <div className="price-number">
-                    {formatRupiah(isAktual ? item.harga_aktual : item.prediksi)}
-                    <span className="unit-label">/ kg</span>
-                  </div>
-
-                  {/* Catatan bila isian forward fill */}
-                  {isAktual && item.diisi_ffill && (
-                    <div className="ffill-notice">
-                      <Info size={14} /> Harga hari ini berasal dari catatan hari kerja sebelumnya (pasar tutup/hari libur).
-                    </div>
-                  )}
-
-                  {/* Pembanding Naive (Wajib selalu tampil pada prediksi) */}
-                  {!isAktual && (
-                    <div className="naive-comparison-box">
-                      <div className="naive-row">
-                        <span className="naive-title">Pembanding Harga Terakhir (Naive):</span>
-                        <span className="naive-value">{formatRupiah(item.naive)} / kg</span>
-                      </div>
-                      <div className="naive-disclaimer">
-                        Model tidak terbukti lebih akurat daripada harga terakhir.
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Batang Visual Rentang Ketidakpastian (Hanya saat status prediksi) */}
-                {!isAktual && (
-                  <div className="card-visual-section">
-                    <RentangVisualBar item={item} isH67={isH67} />
-                  </div>
+          {/* BARIS STATUS TANGGAL & CATATAN KONTEKSTUAL RAMPING */}
+          {predictionData && predictionData.status !== 'di_luar_rentang' && (
+            <div className="status-meta-bar">
+              <div className="status-left">
+                <span className="status-label">Tanggal ditampilkan:</span>
+                <span className="status-value">
+                  {formatTanggalIndo(predictionData.tanggal_data)}
+                </span>
+                {predictionData.digeser_ke_jumat && (
+                  <span className="status-tag-shift">
+                    <Clock size={12} /> Digeser ke Jumat
+                  </span>
                 )}
-              </article>
-            );
-          })}
-        </section>
-      )}
+                {predictionData.status === 'aktual' ? (
+                  <span className="status-tag-mode mode-aktual">
+                    <CheckCircle2 size={12} /> Riwayat Aktual
+                  </span>
+                ) : (
+                  <span className={`status-tag-mode mode-prediksi ${predictionData.kategori_horizon === 'h67+' ? 'mode-indikatif' : ''}`}>
+                    {predictionData.label_horizon}
+                  </span>
+                )}
+              </div>
 
-      {/* FOOTER INFORMASI DAN RINGKASAN MODEL */}
-      <footer className="market-footer">
-        <div className="footer-grid">
-          <div className="footer-col">
-            <h3 className="footer-title">Tentang Sistem Ini</h3>
-            <p className="footer-desc">
-              Sistem dibangun untuk keperluan tugas mata kuliah Machine Learning.
-              Data bersumber dari Pusat Informasi Harga Pangan Strategis (PIHPS)
-              Kota Padang untuk lima komoditas utama periode 2022–2026.
-            </p>
-          </div>
-          <div className="footer-col">
-            <h3 className="footer-title">Metode & Keterbatasan</h3>
-            <p className="footer-desc">
-              Model menggunakan analisis statistik deret waktu SARIMAX harian.
-              Prediksi jangka menengah/panjang (h67+) bersifat indikatif tarikan
-              rata-rata historis tanpa interval terkalibrasi. Tidak memuat efek hari besar.
-            </p>
-          </div>
+              {/* Catatan kecil indikatif / hari libur / pergeseran dari array API */}
+              {catatanKontekstual.length > 0 && (
+                <div className="status-context-notes">
+                  {catatanKontekstual.map((teks, idx) => (
+                    <span key={idx} className="context-note-item">
+                      <Info size={13} className="context-icon" /> {teks}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* AREA KEADAAN KHUSUS: ERROR & DI LUAR RENTANG */}
+          {error && (
+            <div className="state-card error-card">
+              <AlertTriangle size={28} className="state-icon error-icon" />
+              <h3>Tidak Dapat Menampilkan Data</h3>
+              <p>{error}</p>
+            </div>
+          )}
+
+          {predictionData?.status === 'di_luar_rentang' && (
+            <div className="state-card out-of-range-card">
+              <Info size={28} className="state-icon info-icon" />
+              <h3>Tanggal di Luar Rentang Sistem</h3>
+              <p>{predictionData.pesan}</p>
+              <div className="range-limits">
+                <div className="limit-box">
+                  <span className="limit-label">Data Riwayat Aktual:</span>
+                  <span className="limit-val">
+                    {formatTanggalIndo(predictionData.rentang_aktual[0])} s.d. {formatTanggalIndo(predictionData.rentang_aktual[1])}
+                  </span>
+                </div>
+                <div className="limit-box">
+                  <span className="limit-label">Periode Prediksi:</span>
+                  <span className="limit-val">
+                    {formatTanggalIndo(predictionData.rentang_prediksi[0])} s.d. {formatTanggalIndo(predictionData.rentang_prediksi[1])}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================================================================
+              GRID KARTU HARGA KOMODITAS (LABEL HARGA / NOTA PASAR)
+              - Sudut hampir persegi (radius kecil)
+              - Garis tepi navy tegas & bayangan keras bergeser
+              - Blok warna komoditas di sisi kiri (tanpa garis warna di atas)
+              - Nama komoditas langsung jadi judul kartu
+              - Angka harga tabular; "Rp" dan "/kg" dikecilkan
+              ================================================================ */}
+          {predictionData?.hasil && predictionData.hasil.length > 0 && (
+            <section className="price-grid">
+              {predictionData.hasil.map((item, idx) => {
+                const komoditasClass = KOMODITAS_CLASS[item.komoditas] || '';
+                const isAktual = predictionData.status === 'aktual';
+                const isH67 = predictionData.kategori_horizon === 'h67+';
+
+                return (
+                  <article
+                    key={item.komoditas}
+                    className={`label-card ${komoditasClass}`}
+                    style={{ animationDelay: `${idx * 40}ms` }}
+                  >
+                    {/* Lubang gantungan nota & garis perforasi */}
+                    <div className="label-punch-hole" aria-hidden="true" />
+
+                    <div className="label-card-inner">
+                      {/* Header Kartu: Nama Komoditas Langsung Jadi Judul */}
+                      <div className="label-top">
+                        <h2 className="commodity-title">{item.komoditas}</h2>
+                        <span className="label-stamp">
+                          {isAktual
+                            ? (item.diisi_ffill ? 'Isian Libur' : 'Aktual')
+                            : (isH67 ? 'Indikatif' : 'Perkiraan')}
+                        </span>
+                      </div>
+
+                      {/* Garis Perforasi Putus-putus */}
+                      <div className="label-perforation" aria-hidden="true" />
+
+                      {/* Angka Harga Utama (Bintang Visual) */}
+                      <div className="price-body">
+                        <div className="price-amount">
+                          <span className="price-prefix">Rp</span>
+                          <span className="price-digits">
+                            {formatRupiahNumber(isAktual ? item.harga_aktual : item.prediksi)}
+                          </span>
+                          <span className="price-unit">/kg</span>
+                        </div>
+
+                        {/* Catatan bila isian forward fill */}
+                        {isAktual && item.diisi_ffill && (
+                          <div className="ffill-inline-note">
+                            * Harga berasal dari catatan hari kerja sebelumnya (pasar tutup/hari libur).
+                          </div>
+                        )}
+
+                        {/* Pembanding Naive */}
+                        {!isAktual && (
+                          <div className="naive-slip-row">
+                            <span className="naive-slip-label">Harga terakhir (naive):</span>
+                            <span className="naive-slip-val">{formatRupiah(item.naive)}/kg</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Batang Visual Rentang Ketidakpastian (Hanya saat status prediksi) */}
+                      {!isAktual && (
+                        <div className="card-visual-section">
+                          <RentangVisualBar item={item} isH67={isH67} />
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </section>
+          )}
+
+          {/* FOOTER INFORMASI */}
+          <footer className="market-footer">
+            <div className="footer-grid">
+              <div className="footer-col">
+                <h3 className="footer-title">Tentang Sistem Ini</h3>
+                <p className="footer-desc">
+                  Sistem integrasi data harga pangan strategis Kota Padang (PIHPS)
+                  periode 2022–2026 untuk keperluan mata kuliah Machine Learning.
+                </p>
+              </div>
+              <div className="footer-col">
+                <h3 className="footer-title">Metode & Keterbatasan</h3>
+                <p className="footer-desc">
+                  Model deret waktu SARIMAX harian. Prediksi h67+ bersifat indikatif
+                  arah rata-rata historis tanpa interval terkalibrasi.
+                </p>
+              </div>
+            </div>
+            <div className="footer-bottom">
+              <span>Papan Harga Pangan Kota Padang · Sistem Informasi Machine Learning</span>
+            </div>
+          </footer>
         </div>
-        <div className="footer-bottom">
-          <span>Papan Harga Pangan Kota Padang · Antarmuka React 19 & Flask API</span>
-        </div>
-      </footer>
+      </main>
     </div>
   );
 }

@@ -1,104 +1,169 @@
 /* ==========================================================================
-   PAPAN HARGA PASAR - TEMA & GAYA VISUAL
+   SISTEM PREDIKSI HARGA PANGAN KOTA PADANG - TEMA LABEL HARGA PASAR
    ========================================================================== */
 
-.market-layout {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
-}
-
-@media (min-width: 768px) {
-  .market-layout {
-    padding: 2.5rem 2rem 4rem;
-  }
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--blue-darkest);
 }
 
 /* --------------------------------------------------------------------------
-   HEADER
+   HERO SECTION (55 - 65vh)
+   Gambar pasar terang di atas (10-15% transparansi biru), makin pekat ke bawah
    -------------------------------------------------------------------------- */
-.market-header {
-  margin-bottom: 2rem;
-  border-bottom: 2px solid var(--border-soft);
-  padding-bottom: 1.5rem;
+.hero-section {
+  position: relative;
+  height: 60vh;
+  min-height: 380px;
+  max-height: 520px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
-.header-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  background-color: var(--bg-subtle);
-  padding: 0.35rem 0.75rem;
-  border-radius: 9999px;
-  border: 1px solid var(--border-strong);
-  margin-bottom: 0.75rem;
+@media (max-width: 640px) {
+  .hero-section {
+    height: 48vh;
+    min-height: 300px;
+  }
 }
 
-.badge-bullet {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--color-cabai-merah);
+.hero-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  z-index: 1;
+}
+
+/* Gradasi biru: atas sangat tipis (10-15%), makin pekat ke bawah menyatu mulus */
+.hero-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(14, 34, 61, 0.12) 0%,
+    rgba(14, 34, 61, 0.28) 40%,
+    rgba(11, 25, 44, 0.75) 75%,
+    rgba(11, 25, 44, 0.96) 92%,
+    var(--blue-darkest) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4.5rem;
+}
+
+@media (min-width: 768px) {
+  .hero-content {
+    padding: 3rem 2rem 5.5rem;
+  }
+}
+
+/* Blok gradasi lokal di belakang judul agar teks putih terbaca kontras tinggi */
+.hero-text-block {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    rgba(11, 25, 44, 0.90) 0%,
+    rgba(11, 25, 44, 0.78) 70%,
+    rgba(11, 25, 44, 0.0) 100%
+  );
+  padding: 1.25rem 2rem 1.25rem 1.25rem;
+  border-left: 5px solid var(--blue-soft);
+  border-radius: var(--radius-tag);
+  max-width: 780px;
 }
 
 .market-title {
-  font-size: 1.85rem;
+  font-family: var(--font-display);
+  font-size: 2.25rem;
   font-weight: 800;
-  color: var(--text-primary);
-  line-height: 1.2;
-  margin-bottom: 0.5rem;
+  color: #FFFFFF;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
 }
 
 @media (min-width: 768px) {
   .market-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 }
 
 .market-subtitle {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
+  font-size: 1rem;
+  color: #F1F5F9;
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
 }
 
-.latest-data-pill {
-  display: inline-block;
-  background-color: #FEF3C7;
-  color: #92400E;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-sm);
+.latest-data-text {
   font-size: 0.85rem;
-  border: 1px solid #FCD34D;
+  color: #93C5FD;
+  font-weight: 600;
 }
 
 /* --------------------------------------------------------------------------
-   PAPAN KONTROL (FORM TANGGAL & KOMODITAS)
+   KONTEN UTAMA DENGAN LATAR GRADASI BIRU MULUS
    -------------------------------------------------------------------------- */
-.control-placard {
-  background-color: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-card);
+.main-content {
+  flex: 1;
+  background: linear-gradient(
+    180deg,
+    var(--blue-darkest) 0%,
+    #122844 14%,
+    #1A3E6E 32%,
+    #255BB3 50%,
+    #3B82F6 70%,
+    #93C5FD 88%,
+    #EBF3FC 100%
+  );
+  padding: 0 1rem 3.5rem;
 }
 
-.control-form {
+.content-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   FORMULIR SEPERTI SLIP / STRIP NOTA RAPAT
+   Sudut tegas (radius kecil), garis tepi navy pekat, bayangan keras bergeser
+   -------------------------------------------------------------------------- */
+.nota-slip-control {
+  background-color: var(--white);
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  box-shadow: var(--shadow-hard);
+  padding: 1.25rem 1.5rem;
+  margin-top: -3.5rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 10;
+}
+
+.nota-form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
 }
 
 @media (min-width: 768px) {
-  .control-form {
+  .nota-form {
     grid-template-columns: 1.4fr 1.4fr 1fr;
     align-items: flex-start;
   }
@@ -107,38 +172,38 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .control-label {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--border-navy);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
 }
 
-.market-input,
-.market-select {
+.nota-input,
+.nota-select {
   width: 100%;
-  padding: 0.75rem 0.9rem;
+  padding: 0.65rem 0.85rem;
   font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  background-color: var(--bg-input);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-md);
+  font-weight: 600;
+  color: var(--text-dark);
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-tag);
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.1s ease;
 }
 
-.market-input:focus,
-.market-select:focus {
-  border-color: var(--text-primary);
-  box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.08);
+.nota-input:focus,
+.nota-select:focus {
+  border-color: var(--blue-primary);
+  background-color: #F8FAFC;
 }
 
 .field-hint {
@@ -146,31 +211,40 @@
   color: var(--text-muted);
 }
 
-.btn-fetch {
+/* Tombol persegi solid tanpa ikon panah dengan teks "Lihat harga" */
+.btn-nota-solid {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.8rem 1.25rem;
-  margin-top: 1.5rem;
+  padding: 0.7rem 1.25rem;
+  margin-top: 1.35rem;
   font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: #FFFFFF;
-  background-color: var(--text-primary);
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 6px -1px rgba(28, 25, 23, 0.2);
-  transition: all 0.15s ease;
+  background-color: var(--blue-primary);
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  box-shadow: var(--shadow-hard-sm);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-.btn-fetch:hover:not(:disabled) {
-  background-color: #000000;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 10px -1px rgba(28, 25, 23, 0.3);
+.btn-nota-solid:hover:not(:disabled) {
+  background-color: #1E40AF;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #0F2240;
 }
 
-.btn-fetch:disabled {
+.btn-nota-solid:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #0F2240;
+}
+
+.btn-nota-solid:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
@@ -185,52 +259,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   BANNER PERINGATAN RESMI (TIDAK BOLEH DISEMBUNYIKAN / DIKECILKAN)
-   -------------------------------------------------------------------------- */
-.warning-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  background-color: var(--amber-warning-bg);
-  border: 2px solid var(--amber-warning-border);
-  border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-banner);
-}
-
-.banner-alert-icon {
-  color: var(--amber-warning-text);
-  flex-shrink: 0;
-  margin-top: 0.1rem;
-}
-
-.banner-content {
-  flex: 1;
-}
-
-.banner-title {
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--amber-warning-text);
-  margin-bottom: 0.35rem;
-}
-
-.banner-list {
-  list-style: disc;
-  padding-left: 1.25rem;
-  font-size: 0.9rem;
-  line-height: 1.45;
-  color: var(--amber-warning-text);
-}
-
-.banner-list li + li {
-  margin-top: 0.25rem;
-}
-
-/* --------------------------------------------------------------------------
-   STATUS BAR
+   BARIS STATUS TANGGAL & CATATAN KONTEKSTUAL
    -------------------------------------------------------------------------- */
 .status-meta-bar {
   display: flex;
@@ -238,68 +267,91 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  box-shadow: var(--shadow-hard-sm);
   padding: 0.65rem 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.status-item {
+.status-left {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   font-size: 0.85rem;
 }
 
 .status-label {
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .status-value {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-dark);
 }
 
-.shifted-tag {
+.status-tag-shift {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   background-color: #FEF3C7;
   color: #B45309;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid #FCD34D;
+  border: 1px solid #B45309;
+  border-radius: var(--radius-tag);
 }
 
-.badge-status {
+.status-tag-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.55rem;
+  border: 1.5px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+}
+
+.mode-aktual {
+  background-color: #DCFCE7;
+  color: #166534;
+}
+
+.mode-prediksi {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.mode-indikatif {
+  background-color: #F1F5F9;
+  color: #334155;
+}
+
+.status-context-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--blue-deep);
+  font-weight: 600;
+}
+
+.context-note-item {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: 9999px;
 }
 
-.badge-aktual {
-  background-color: #DCFCE7;
-  color: #166534;
-  border: 1px solid #BBF7D0;
-}
-
-.badge-prediksi {
-  background-color: #E0E7FF;
-  color: #3730A3;
-  border: 1px solid #C7D2FE;
-}
-
-.badge-indikatif {
-  background-color: #F1F5F9;
-  color: #475569;
-  border: 1px solid #CBD5E1;
+.context-icon {
+  color: var(--blue-primary);
+  flex-shrink: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -307,10 +359,11 @@
    -------------------------------------------------------------------------- */
 .state-card {
   text-align: center;
-  padding: 3rem 1.5rem;
-  background-color: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 2px dashed var(--border-strong);
+  padding: 2.5rem 1.5rem;
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  box-shadow: var(--shadow-hard);
   margin: 1.5rem 0;
 }
 
@@ -319,7 +372,7 @@
 }
 
 .error-card {
-  border-color: #F87171;
+  border-color: #991B1B;
   background-color: #FEF2F2;
 }
 
@@ -329,7 +382,8 @@
 
 .error-card h3 {
   color: #991B1B;
-  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
@@ -339,22 +393,23 @@
 }
 
 .out-of-range-card {
-  border-color: #FBBF24;
-  background-color: #FFFBEB;
+  border-color: var(--border-navy);
+  background-color: #FFFFFF;
 }
 
 .info-icon {
-  color: #D97706;
+  color: var(--blue-primary);
 }
 
 .out-of-range-card h3 {
-  color: #92400E;
-  font-size: 1.25rem;
+  color: var(--border-navy);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
 .out-of-range-card p {
-  color: #78350F;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   margin-bottom: 1.25rem;
 }
@@ -375,10 +430,10 @@
 }
 
 .limit-box {
-  background-color: #FFFFFF;
+  background-color: #F8FAFC;
   padding: 0.75rem 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid #FDE68A;
+  border: 1.5px solid var(--border-navy);
+  border-radius: var(--radius-tag);
   text-align: left;
   flex: 1;
 }
@@ -387,18 +442,21 @@
   display: block;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #92400E;
+  color: var(--blue-deep);
   text-transform: uppercase;
 }
 
 .limit-val {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-dark);
 }
 
 /* --------------------------------------------------------------------------
-   GRID KARTU HARGA KOMODITAS
+   GRID KARTU HARGA KOMODITAS (LABEL HARGA / NOTA PASAR)
+   - Sudut hampir persegi
+   - Garis tepi navy pekat & bayangan keras bergeser
+   - Penanda warna blok di sisi kiri kartu
    -------------------------------------------------------------------------- */
 .price-grid {
   display: grid;
@@ -420,26 +478,21 @@
   }
 }
 
-/* Kartu Papan Harga */
-.price-card {
-  background-color: var(--bg-card);
-  border: 2px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: cardAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+.label-card {
+  background-color: var(--white);
+  border: 2px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  box-shadow: var(--shadow-hard);
   position: relative;
   overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  animation: cardAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes cardAppear {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -447,172 +500,169 @@
   }
 }
 
-.price-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+.label-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0px #0F2240;
 }
 
-/* Aksen Warna Berkarakter Tiap Komoditas */
+/* Penanda warna blok di sisi kiri kartu (tanpa garis warna di atas) */
 .komoditas-ayam {
-  border-top: 6px solid var(--color-ayam);
+  border-left: 10px solid var(--color-ayam);
 }
 .komoditas-bawang-merah {
-  border-top: 6px solid var(--color-bawang-merah);
+  border-left: 10px solid var(--color-bawang-merah);
 }
 .komoditas-bawang-putih {
-  border-top: 6px solid var(--color-bawang-putih);
+  border-left: 10px solid var(--color-bawang-putih);
 }
 .komoditas-cabai-merah {
-  border-top: 6px solid var(--color-cabai-merah);
+  border-left: 10px solid var(--color-cabai-merah);
 }
 .komoditas-cabai-rawit {
-  border-top: 6px solid var(--color-cabai-rawit);
+  border-left: 10px solid var(--color-cabai-rawit);
 }
 
-.card-top {
+/* Lubang gantungan nota di sudut atas kanan */
+.label-punch-hole {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--border-navy);
+  background-color: #E2E8F0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.label-card-inner {
+  padding: 1.25rem 1.25rem 1.25rem 1.25rem;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px dashed var(--border-soft);
+  flex-direction: column;
+  height: 100%;
 }
 
-.commodity-tag {
+.label-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-right: 28px; /* ruang untuk punch hole */
+}
+
+/* Nama komoditas langsung jadi judul kartu */
+.commodity-title {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.label-stamp {
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-muted);
+  padding: 0.15rem 0.45rem;
+  border: 1.5px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  background-color: #F8FAFC;
+  color: var(--text-secondary);
 }
 
-.commodity-name {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.status-pill {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-sm);
-  white-space: nowrap;
-}
-
-.pill-aktual {
-  background-color: #DCFCE7;
-  color: #15803D;
-  border: 1px solid #BBF7D0;
-}
-
-.pill-forecast {
-  background-color: #FEF3C7;
-  color: #B45309;
-  border: 1px solid #FDE68A;
-}
-
-.pill-indikatif {
-  background-color: #F1F5F9;
-  color: #475569;
-  border: 1px solid #E2E8F0;
+/* Garis perforasi putus-putus */
+.label-perforation {
+  border-bottom: 2px dashed #CBD5E1;
+  margin: 0.75rem 0 1rem;
 }
 
 /* Badan Harga */
 .price-body {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.price-label-small {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.25rem;
-}
-
-.price-number {
+/* Angka harga tabular; "Rp" dan "/kg" dikecilkan */
+.price-amount {
   font-family: var(--font-display);
-  font-size: 2.25rem;
-  font-weight: 900;
-  color: var(--text-primary);
-  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
   display: flex;
   align-items: baseline;
-  gap: 0.4rem;
+  color: var(--text-dark);
+  line-height: 1;
+  margin-bottom: 0.5rem;
 }
 
-.unit-label {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 500;
+.price-prefix {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-right: 0.25rem;
+}
+
+.price-digits {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.price-unit {
+  font-size: 1.15rem;
+  font-weight: 600;
   color: var(--text-muted);
+  margin-left: 0.25rem;
 }
 
-.ffill-notice {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background-color: #FEF3C7;
-  color: #92400E;
-  font-size: 0.8rem;
-  padding: 0.45rem 0.65rem;
-  border-radius: var(--radius-sm);
-  margin-top: 0.65rem;
-  border: 1px solid #FCD34D;
+.ffill-inline-note {
+  font-size: 0.78rem;
+  color: #B45309;
+  font-weight: 600;
+  margin-top: 0.4rem;
 }
 
-/* Pembanding Naive */
-.naive-comparison-box {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  padding: 0.65rem 0.85rem;
-  margin-top: 0.75rem;
-}
-
-.naive-row {
+/* Baris Slip Pembanding Naive */
+.naive-slip-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #F8FAFC;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-tag);
+  padding: 0.45rem 0.65rem;
+  margin-top: 0.65rem;
   font-size: 0.85rem;
 }
 
-.naive-title {
+.naive-slip-label {
   color: var(--text-secondary);
   font-weight: 600;
 }
 
-.naive-value {
+.naive-slip-val {
   font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.naive-disclaimer {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 0.25rem;
-  font-style: italic;
+  font-weight: 800;
+  color: var(--text-dark);
+  font-size: 1.1rem;
 }
 
 /* --------------------------------------------------------------------------
    BATANG VISUAL RENTANG PREDIKSI (CSS-BASED)
    -------------------------------------------------------------------------- */
 .card-visual-section {
-  background-color: #FAF8F5;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  padding: 0.85rem 1rem;
+  background-color: #F8FAFC;
+  border: 1.5px solid var(--border-navy);
+  border-radius: var(--radius-tag);
+  padding: 0.75rem 0.9rem;
+  margin-top: auto;
 }
 
 .range-visual-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .range-visual-header {
@@ -629,26 +679,28 @@
 
 .range-visual-sub {
   font-family: var(--font-display);
-  color: var(--text-primary);
+  color: var(--text-dark);
   font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .range-bar-track {
   position: relative;
-  height: 28px;
-  background-color: #E7E2D7;
-  border-radius: 9999px;
+  height: 24px;
+  background-color: #E2E8F0;
+  border: 1px solid var(--border-navy);
+  border-radius: var(--radius-tag);
   overflow: visible;
-  margin: 0.5rem 0;
+  margin: 0.4rem 0;
 }
 
 /* Layer 80% */
 .range-bar-80 {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
+  top: 3px;
+  bottom: 3px;
   background-color: #CBD5E1;
-  border-radius: 9999px;
+  border-radius: 1px;
   opacity: 0.85;
 }
 
@@ -661,10 +713,10 @@
 /* Layer 50% */
 .range-bar-50 {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
+  top: 3px;
+  bottom: 3px;
   background-color: #94A3B8;
-  border-radius: 9999px;
+  border-radius: 1px;
 }
 
 .komoditas-ayam .range-bar-50 { background-color: #F59E0B; }
@@ -676,35 +728,34 @@
 /* Layer Rentang Historis */
 .range-bar-hist {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
+  top: 3px;
+  bottom: 3px;
   background-color: #94A3B8;
-  border-radius: 9999px;
+  border-radius: 1px;
   opacity: 0.7;
 }
 
-/* Titik Model */
+/* Titik Penanda Model (Persegi Tegas) */
 .marker-prediksi {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: #1C1917;
-  border: 2px solid #FFFFFF;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  width: 12px;
+  height: 12px;
+  background-color: #0F172A;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
   z-index: 3;
 }
 
-/* Garis Naive */
+/* Garis Penanda Naive */
 .marker-naive {
   position: absolute;
   top: -2px;
   bottom: -2px;
   width: 3px;
   transform: translateX(-50%);
-  background-color: #475569;
+  background-color: #334155;
   border-left: 1px dashed #FFFFFF;
   z-index: 2;
 }
@@ -715,23 +766,23 @@
   font-weight: 700;
   text-transform: uppercase;
   padding: 0.1rem 0.3rem;
-  border-radius: 3px;
+  border-radius: 1px;
   white-space: nowrap;
 }
 
 .marker-label-pred {
-  top: -20px;
+  top: -18px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #1C1917;
+  background-color: #0F172A;
   color: #FFFFFF;
 }
 
 .marker-label-naive {
-  bottom: -20px;
+  bottom: -18px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #475569;
+  background-color: #334155;
   color: #FFFFFF;
 }
 
@@ -740,7 +791,7 @@
   justify-content: space-between;
   font-size: 0.7rem;
   color: var(--text-muted);
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 .range-legend {
@@ -750,7 +801,7 @@
   gap: 0.75rem;
   font-size: 0.7rem;
   color: var(--text-muted);
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
 }
 
 .legend-item {
@@ -760,9 +811,9 @@
 }
 
 .legend-chip {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
 }
 
 .chip-80 {
@@ -776,7 +827,7 @@
 .chip-naive {
   width: 8px;
   height: 2px;
-  background-color: #475569;
+  background-color: #334155;
 }
 
 .typical-error-note {
@@ -785,12 +836,12 @@
 }
 
 /* --------------------------------------------------------------------------
-   FOOTER
+   FOOTER (LATAR BIRU ES)
    -------------------------------------------------------------------------- */
 .market-footer {
-  margin-top: 3rem;
+  margin-top: 3.5rem;
   padding-top: 2rem;
-  border-top: 1.5px solid var(--border-soft);
+  border-top: 2px solid var(--border-navy);
 }
 
 .footer-grid {
@@ -807,24 +858,26 @@
 }
 
 .footer-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0F172A;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .footer-desc {
   font-size: 0.85rem;
-  color: var(--text-muted);
-  line-height: 1.6;
+  color: #1E3A8A;
+  line-height: 1.5;
 }
 
 .footer-bottom {
   text-align: center;
   font-size: 0.8rem;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: #334155;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--border-soft);
+  border-top: 1px dashed rgba(15, 34, 64, 0.3);
 }
