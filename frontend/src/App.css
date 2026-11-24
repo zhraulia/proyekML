@@ -334,6 +334,13 @@
   color: #334155;
 }
 
+.horizon-calc-note {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: inline-block;
+}
+
 .status-context-notes {
   display: flex;
   flex-direction: column;

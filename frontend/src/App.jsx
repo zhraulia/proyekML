@@ -9,6 +9,15 @@ import {
 } from 'lucide-react';
 import './App.css';
 
+// Helper: Dapatkan tanggal hari ini dalam format YYYY-MM-DD menurut waktu lokal peramban (tanpa toISOString)
+export const getTodayLocalDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 // Helper: Format angka murni dengan pemisah ribuan titik
 export const formatRupiahNumber = (angka) => {
   if (angka === null || angka === undefined || isNaN(angka)) return '-';
@@ -206,10 +215,18 @@ export default function App() {
         const data = await res.json();
         setMeta(data);
 
-        const defaultDate = data.tanggal_awal_prediksi || data.data_terakhir || '2026-11-20';
-        setSelectedDate(defaultDate);
+        // 1 & 2. Tanggal awal: hari ini menurut waktu lokal peramban, dipaksa ke rentang tanggal_min - tanggal_maks
+        let initialDate = getTodayLocalDateString();
+        if (data.tanggal_min && initialDate < data.tanggal_min) {
+          initialDate = data.tanggal_min;
+        } else if (data.tanggal_maks && initialDate > data.tanggal_maks) {
+          initialDate = data.tanggal_maks;
+        }
 
-        fetchPrediksi(defaultDate, 'semua');
+        setSelectedDate(initialDate);
+
+        // 3. Langsung muat hasil saat halaman pertama kali dibuka
+        fetchPrediksi(initialDate, 'semua');
       } catch (err) {
         setError(err.message || 'Gagal tersambung ke backend.');
       } finally {
@@ -371,9 +388,14 @@ export default function App() {
                     <CheckCircle2 size={12} /> Riwayat Aktual
                   </span>
                 ) : (
-                  <span className={`status-tag-mode mode-prediksi ${predictionData.kategori_horizon === 'h67+' ? 'mode-indikatif' : ''}`}>
-                    {predictionData.label_horizon}
-                  </span>
+                  <>
+                    <span className={`status-tag-mode mode-prediksi ${predictionData.kategori_horizon === 'h67+' ? 'mode-indikatif' : ''}`}>
+                      {predictionData.label_horizon}
+                    </span>
+                    <span className="horizon-calc-note">
+                      dihitung dari data terakhir, {formatTanggalIndo(meta?.data_terakhir || predictionData.data_terakhir)}
+                    </span>
+                  </>
                 )}
               </div>
 
